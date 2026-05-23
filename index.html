@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Seven - Design & Savings Tracker</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js">
+    </script>
+    <style>
+        :root {
+            --bg: #0f0f1a;
+            --surface: #1a1a2e;
+            --surface2: #222240;
+            --gold: #f0c040;
+            --gold-dark: #c49a20;
+            --purple: #8b5cf6;
+            --purple-light: #a78bfa;
+            --green: #34d399;
+            --red: #f87171;
+            --blue: #60a5fa;
+            --text: #e2e8f0;
+            --text-dim: #94a3b8;
+            --border: #2d2d50;
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            background-image: radial-gradient(ellipse at 20% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 60%, rgba(240, 192, 64, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 50% 90%, rgba(96, 165, 250, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+        .header {
+            background: var(--surface);
+            border-bottom: 2px solid var(--border);
+            padding: 20px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+        }
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        .logo-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(135deg, var(--purple), #6d28d9);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; font-weight: 900; color: #fff;
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+        @keyframes logoPulse {
+            0%, 100% { box-shadow: 0 4px 20px rgba(139, 92, 246, 0.45); }
+            50% { box-shadow: 0 4px 35px rgba(139, 92, 246, 0.75); }
+        }
+        .logo-text h1 {
+            font-size: 1.7rem; font-weight: 800; letter-spacing: -0.5px;
+            background: linear-gradient(135deg, #fff, #cbd5e1);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .logo-text span { font-size: 0.8rem; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
+        .nav-tabs { display: flex; gap: 6px; background: var(--surface2); border-radius: 30px; padding: 5px; }
+        .nav-tab {
+            padding: 10px 22px; border-radius: 26px; border: none; cursor: pointer;
+            font-weight: 600; font-size: 0.95rem; transition: var(--transition);
+            background: transparent; color: var(--text-dim); white-space: nowrap; letter-spacing: 0.3px;
+        }
+        .nav-tab.active { background: var(--purple); color: #fff; box-shadow: 0 4px 18px rgba(139, 92, 246, 0.5); }
+        .nav-tab:hover:not(.active) { color: #fff; background: rgba(255,255,255,0.05); }
+        .nav-tab .badge {
+            display: inline-block; background: var(--gold); color: #000;
+            font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 6px; font-weight: 700;
+        }
+        .main-container { max-width: 1300px; margin: 0 auto; padding: 28px 20px 40px; }
+        .tab-content { display: none; animation: fadeSlideIn 0.4s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+        .section-title .icon { font-size: 1.6rem; }
+        .section-subtitle { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 16px; font-weight: 400; }
+        .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+        .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 900px) {
+            .grid-2col, .grid-3col { grid-template-columns: 1fr; }
+            .header { padding: 14px 16px; justify-content: center; text-align: center; }
+            .logo-text h1 { font-size: 1.3rem; }
+            .nav-tab { padding: 8px 14px; font-size: 0.85rem; }
+        }
+        .card {
+            background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+            padding: 24px; box-shadow: var(--shadow); transition: var(--transition);
+        }
+        .card:hover { border-color: #3d3d65; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+        .card-header { font-weight: 700; font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .selectors { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
+        .selectors label { font-weight: 600; color: var(--text-dim); font-size: 0.9rem; margin-right: 4px; }
+        .selectors select {
+            padding: 8px 14px; border-radius: 20px; border: 2px solid var(--border);
+            background: var(--surface2); color: #fff; font-weight: 600; font-size: 0.85rem;
+            cursor: pointer; transition: var(--transition);
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a78bfa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;
+        }
+        .selectors select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
+        .leaderboard-table { width: 100%; border-collapse: collapse; }
+        .leaderboard-table th, .leaderboard-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+        .leaderboard-table th { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+        .leaderboard-table tbody tr { transition: var(--transition); border-radius: 8px; }
+        .leaderboard-table tbody tr:hover { background: rgba(255,255,255,0.03); }
+        .rank-cell { font-weight: 800; font-size: 1.2rem; width: 50px; }
+        .rank-1 { color: var(--gold); } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
+        .member-name { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .member-avatar {
+            width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.85rem; color: #fff; flex-shrink: 0;
+        }
+        .design-count { font-weight: 700; font-size: 1.1rem; color: var(--purple-light); }
+        .category-breakdown { font-size: 0.75rem; color: var(--text-dim); margin-top: 2px; }
+        .crown { font-size: 1.3rem; animation: bounce 1s ease-in-out infinite; }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .vote-form { display: flex; flex-direction: column; gap: 14px; }
+        .vote-form label { font-weight: 600; font-size: 0.9rem; color: var(--text-dim); }
+        .vote-form select, .vote-form input {
+            padding: 12px 16px; border-radius: var(--radius-sm); border: 2px solid var(--border);
+            background: var(--surface2); color: #fff; font-size: 1rem; font-weight: 500;
+            transition: var(--transition); cursor: pointer;
+            appearance: none; -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a78bfa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 14px center; padding-right: 40px;
+        }
+        .vote-form select:focus, .vote-form input:focus {
+            outline: none; border-color: var(--purple); box-shadow: 0 0 0 4px rgba(139,92,246,0.15);
+        }
+        .btn {
+            padding: 12px 24px; border-radius: 28px; border: none; cursor: pointer;
+            font-weight: 700; font-size: 0.95rem; letter-spacing: 0.4px; transition: var(--transition); text-transform: uppercase;
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: #1a1a2e; box-shadow: 0 4px 18px rgba(240,192,64,0.35); font-weight: 800;
+        }
+        .btn-gold:hover { transform: translateY(-2px); }
+        .btn-gold:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .btn-sm { padding: 7px 16px; font-size: 0.8rem; }
+        .vote-status {
+            padding: 10px 16px; border-radius: var(--radius-sm); font-weight: 600; font-size: 0.9rem; text-align: center;
+        }
+        .vote-status.success { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
+        .vote-status.info { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+        .vote-status.warning { background: rgba(240,192,64,0.15); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+        .chart-wrap { position: relative; width: 100%; max-height: 380px; }
+        .chart-wrap canvas { width: 100% !important; max-height: 380px; }
+        .chart-wrap-sm { max-height: 280px; }
+        .chart-wrap-sm canvas { max-height: 280px; }
+        .savings-member-card {
+            background: var(--surface2); border-radius: var(--radius-sm); padding: 18px 20px;
+            border: 1px solid var(--border); transition: var(--transition); position: relative; overflow: hidden;
+        }
+        .savings-member-card:hover { border-color: #4a4a75; transform: translateY(-3px); }
+        .savings-member-card .sm-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
+        .savings-member-card .sm-balance { font-size: 1.6rem; font-weight: 800; color: var(--green); }
+        .savings-member-card .sm-detail { font-size: 0.8rem; color: var(--text-dim); display: flex; justify-content: space-between; margin-top: 4px; }
+        .progress-bar-wrap { margin-top: 10px; background: #1a1a30; border-radius: 20px; height: 8px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; border-radius: 20px; transition: width 0.8s ease; background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+        .withdrawn-indicator { color: var(--red); font-weight: 600; }
+        .toast {
+            position: fixed; bottom: 30px; right: 30px; background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 14px 22px; color: #fff; font-weight: 600;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6); z-index: 999; animation: slideUp 0.3s ease; display: none;
+        }
+        .toast.show { display: block; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toast.success { border-color: var(--green); }
+        .toast.error { border-color: var(--red); }
+        .highlight-flash { animation: flashGold 0.6s ease; }
+        @keyframes flashGold {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(240,192,64,0); }
+            50% { box-shadow: 0 0 30px 8px rgba(240,192,64,0.5); }
+        }
+        .winner-banner {
+            background: linear-gradient(135deg, #2a1f00, #3d2e00); border: 2px solid var(--gold);
+            border-radius: var(--radius); padding: 18px 24px; text-align: center; margin-top: 16px;
+            animation: glowPulse 2s ease-in-out infinite;
+        }
+        @keyframes glowPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(240,192,64,0.3); }
+            50% { box-shadow: 0 0 40px rgba(240,192,64,0.6); }
+        }
+        .winner-banner .winner-name { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
+        .winner-banner .winner-title { font-size: 0.85rem; color: #cba030; text-transform: uppercase; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-icon">7</div>
+            <div class="logo-text"><h1>Team Seven</h1><span>Design & Savings Tracker</span></div>
+        </div>
+        <nav class="nav-tabs">
+            <button class="nav-tab active" data-tab="designs">🎨 Designs <span class="badge" id="badgeTotal">0</span></button>
+            <button class="nav-tab" data-tab="votes">🗳️ Vote <span class="badge" id="badgeVotes">0/7</span></button>
+            <button class="nav-tab" data-tab="savings">💰 Savings</button>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <!-- Designs Tab -->
+        <div class="tab-content active" id="tab-designs">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">🏆 Design Submission Leaderboard</div>
+                    <div class="selectors">
+                        <label for="monthSelect">Month:</label>
+                        <select id="monthSelect"></select>
+                        <label for="weekSelect">Week:</label>
+                        <select id="weekSelect"></select>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="leaderboard-table">
+                            <thead><tr><th>Rank</th><th>Member</th><th>Designs</th><th>Breakdown</th></tr></thead>
+                            <tbody id="leaderboardBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header">📊 Design Submissions Overview</div>
+                    <div class="chart-wrap"><canvas id="designsChart"></canvas></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Votes Tab -->
+        <div class="tab-content" id="tab-votes">
+            <div class="grid-2col">
+                <div class="card">
+                    <div class="card-header">🗳️ Cast Your Vote</div>
+                    <div class="section-subtitle" id="voteStatusMessage">Loading...</div>
+                    <div style="margin-bottom:12px;"><span style="font-weight:600;color:var(--gold);">📅 Voting week:</span> <span id="currentVoteWeek">--</span></div>
+                    <div class="vote-form">
+                        <label for="voterSelect">👤 I am:</label>
+                        <select id="voterSelect"><option value="">-- Select Your Name --</option></select>
+                        <label for="voteForSelect">🎯 I vote for:</label>
+                        <select id="voteForSelect"><option value="">-- Select Who to Vote For --</option></select>
+                        <button class="btn btn-gold" id="castVoteBtn" onclick="castVote()">✨ Submit Vote</button>
+                        <div id="voteMsg" class="vote-status info" style="display:none;"></div>
+                    </div>
+                    <div style="margin-top:12px;"><span style="font-size:0.8rem;color:var(--text-dim);">Votes cast this week: </span><span id="votesCountDisplay">0 / 7</span></div>
+                </div>
+                <div class="card" id="voteResultsCard">
+                    <div class="card-header">📈 Vote Results — <span id="voteResultWeek">--</span></div>
+                    <div class="chart-wrap chart-wrap-sm"><canvas id="voteChart"></canvas></div>
+                    <div id="winnerBannerContainer"></div>
+                    <div style="margin-top:14px;"><span style="font-size:0.8rem;color:var(--text-dim);">🗳️ Vote Breakdown:</span><ul id="voteBreakdown" style="list-style:none;margin-top:6px;font-size:0.9rem;"></ul></div>
+                    <button class="btn btn-sm" style="background:transparent;border:1px solid var(--border);color:var(--text-dim);margin-top:8px;" onclick="resetVotes()">🔄 Reset All Votes (Admin)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Savings Tab -->
+        <div class="tab-content" id="tab-savings">
+            <div class="section-title"><span class="icon">💰</span> Team Savings Tracker</div>
+            <div class="section-subtitle">Track how much each member saves and withdraws</div>
+            <div class="grid-3col" id="savingsCardsContainer"></div>
+            <div class="card" style="margin-top:24px;">
+                <div class="card-header">📊 Savings vs Withdrawals Comparison</div>
+                <div class="chart-wrap"><canvas id="savingsChart"></canvas></div>
+            </div>
+            <div class="card" style="margin-top:20px;text-align:center;">
+                <span style="font-size:1.1rem;">💼 <strong>Total Team Balance:</strong> </span>
+                <span id="totalTeamBalance" style="font-size:1.6rem;font-weight:900;color:var(--green);">$0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            // ========== CONFIG ==========
+            const SHEET_ID = '1zUy6vRGMzLVBj7tAee5TWg-9CNkRMYpeiLRLFC--w-o';
+            const API_KEY = 'AIzaSyAjsg29wLqxhnzcROpe68cq2TXKS2jN05w';
+            const MEMBERS = ["Anik", "Abir", "Rana", "Jony", "Dipok", "Mijan", "Himel"];
+            const MEMBER_COLORS = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#38bdf8'];
+            const MEMBER_AVATAR_BG = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#8e44ad', '#e67e22', '#1abc9c'];
+
+            // Design data organized by month -> week -> member -> { total, categories }
+            let designData = {};   // { monthStr: { weekStr: { member: { total, categories } } } }
+            let months = [];       // sorted list of unique month strings
+            let selectedMonth = '';
+            let selectedWeek = 'all'; // 'all' or 'Week 1', ...
+
+            let savingsData = [];
+            let votes = {};
+            let votingWeek = '';
+
+            let designsChartInstance, voteChartInstance, savingsChartInstance;
+            const $ = (sel) => document.querySelector(sel);
+
+            // ========== UTILS ==========
+            function getFridayDate(date) {
+                const d = new Date(date);
+                const day = d.getDay();
+                const diff = (day >= 5) ? (day - 5) : (day + 2);
+                d.setDate(d.getDate() - diff);
+                return d.toISOString().split('T')[0];
+            }
+            function isTodayFriday() { return new Date().getDay() === 5; }
+
+            function parseMonth(str) {
+                // str like "May 2026"
+                const [monthName, year] = str.split(' ');
+                const monthIndex = new Date(`${monthName} 1, 2021`).getMonth(); // any year
+                return new Date(parseInt(year), monthIndex, 1);
+            }
+
+            // ========== INIT ==========
+            function init() {
+                loadVotesFromStorage();
+                setupVotingWeek();
+                populateMemberSelects();
+                setupNavTabs();
+                fetchAllData();
+            }
+
+            function setupNavTabs() {
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', () => {
+                        document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                        tab.classList.add('active');
+                        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                        document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+                        setTimeout(refreshAllCharts, 200);
+                    });
+                });
+            }
+
+            function populateMemberSelects() {
+                const voter = $('#voterSelect');
+                const voteFor = $('#voteForSelect');
+                voter.innerHTML = '<option value="">-- Select Your Name --</option>';
+                voteFor.innerHTML = '<option value="">-- Select Who to Vote For --</option>';
+                MEMBERS.forEach((m, i) => {
+                    const emoji = ['🦁','🐯','🐺','🦊','🐼','🐨','🦄'][i] || '⭐';
+                    voter.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
+                    voteFor.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
+                });
+            }
+
+            // ========== VOTING (unchanged) ==========
+            function loadVotesFromStorage() {
+                try { votes = JSON.parse(localStorage.getItem('seven_votes') || '{}'); } catch { votes = {}; }
+            }
+            function saveVotesToStorage() { localStorage.setItem('seven_votes', JSON.stringify(votes)); }
+
+            function setupVotingWeek() {
+                const today = new Date();
+                votingWeek = getFridayDate(today);
+                if (isTodayFriday()) {
+                    if (!votes[votingWeek]) votes[votingWeek] = {};
+                } else {
+                    if (!votes[votingWeek]) votes[votingWeek] = {};
+                }
+                saveVotesToStorage();
+                updateVotingUI();
+            }
+
+            function updateVotingUI() {
+                const isOpen = isTodayFriday();
+                const msgEl = $('#voteStatusMessage');
+                const btn = $('#castVoteBtn');
+                const voterSel = $('#voterSelect');
+                const voteForSel = $('#voteForSelect');
+
+                if (isOpen) {
+                    msgEl.textContent = '🎉 Voting is OPEN! Cast your vote now.';
+                    msgEl.style.color = 'var(--green)';
+                    btn.disabled = false;
+                    voterSel.disabled = false;
+                    voteForSel.disabled = false;
+                } else {
+                    const nextFriday = new Date();
+                    const day = nextFriday.getDay();
+                    const diff = (5 - day + 7) % 7;
+                    nextFriday.setDate(nextFriday.getDate() + diff);
+                    const nextDate = nextFriday.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+                    msgEl.textContent = `🔒 Voting is closed. Next voting opens on Friday, ${nextDate}.`;
+                    msgEl.style.color = 'var(--red)';
+                    btn.disabled = true;
+                    voterSel.disabled = true;
+                    voteForSel.disabled = true;
+                }
+                $('#currentVoteWeek').textContent = votingWeek;
+                $('#voteResultWeek').textContent = votingWeek;
+                updateVoteResults();
+            }
+
+            window.castVote = function() {
+                if (!isTodayFriday()) { showVoteMsg('Voting is only open on Fridays!', 'warning'); return; }
+                const voter = $('#voterSelect').value;
+                const voteFor = $('#voteForSelect').value;
+                if (!voter) return showVoteMsg('Select your name first!', 'warning');
+                if (!voteFor) return showVoteMsg('Select who to vote for!', 'warning');
+                if (voter === voteFor) return showVoteMsg('Cannot vote for yourself!', 'warning');
+
+                const weekVotes = votes[votingWeek] || {};
+                if (weekVotes[voter]) return showVoteMsg(`You already voted for ${weekVotes[voter]}!`, 'warning');
+                if (!votes[votingWeek]) votes[votingWeek] = {};
+                votes[votingWeek][voter] = voteFor;
+                saveVotesToStorage();
+                showVoteMsg(`✅ Vote recorded! ${voter} ➜ ${voteFor}`, 'success');
+                updateVoteResults();
+                $('#voterSelect').value = '';
+                $('#voteForSelect').value = '';
+                $('#voteResultsCard').classList.add('highlight-flash');
+                setTimeout(() => $('#voteResultsCard').classList.remove('highlight-flash'), 600);
+            };
+
+            function updateVoteResults() {
+                const weekVotes = votes[votingWeek] || {};
+                const counts = {};
+                MEMBERS.forEach(m => counts[m] = 0);
+                Object.values(weekVotes).forEach(v => { if (counts[v] !== undefined) counts[v]++; });
+
+                const breakdown = $('#voteBreakdown');
+                breakdown.innerHTML = '';
+                const sorted = Object.entries(counts).sort((a,b) => b[1]-a[1]);
+                sorted.forEach(([name, cnt]) => {
+                    breakdown.innerHTML += `<li style="padding:4px 0;display:flex;justify-content:space-between;"><span>${name}</span> <strong>${cnt} vote${cnt!==1?'s':''}</strong></li>`;
+                });
+                renderVoteChart(counts);
+                const max = Math.max(...Object.values(counts));
+                const winners = sorted.filter(([,c]) => c===max && c>0).map(([n])=>n);
+                const banner = $('#winnerBannerContainer');
+                if (winners.length && max > 0) {
+                    const titles = ['🏆 Design King!','👑 The Chosen One','🌟 Vote Magnet','🎨 Creative Genius','💫 Favorite','🔥 On Fire','🥇 Unbeatable'];
+                    banner.innerHTML = `<div class="winner-banner"><div class="winner-title">${titles[Math.floor(Math.random()*titles.length)]}</div><div class="winner-name">👑 ${winners.join(' & ')} 👑</div></div>`;
+                } else {
+                    banner.innerHTML = '<div style="text-align:center;padding:14px;color:var(--text-dim);">No votes yet</div>';
+                }
+                $('#votesCountDisplay').textContent = `${Object.keys(weekVotes).length} / ${MEMBERS.length}`;
+            }
+
+            function renderVoteChart(counts) {
+                const ctx = $('#voteChart');
+                if (!ctx) return;
+                if (voteChartInstance) voteChartInstance.destroy();
+                voteChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: MEMBERS,
+                        datasets: [{
+                            data: MEMBERS.map(m => counts[m]||0),
+                            backgroundColor: MEMBER_COLORS,
+                            borderColor: '#1a1a2e',
+                            borderWidth: 3,
+                            hoverBorderColor: '#f0c040',
+                            hoverBorderWidth: 4,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { position:'bottom', labels:{ color:'#e2e8f0', usePointStyle:true } },
+                            title: { display:true, text: `Votes – ${votingWeek}`, color:'#f0c040' }
+                        }
+                    }
+                });
+            }
+
+            window.resetVotes = function() {
+                if (confirm('Delete ALL votes?')) {
+                    votes = {};
+                    saveVotesToStorage();
+                    setupVotingWeek();
+                    updateVoteResults();
+                }
+            };
+
+            // ========== SHEET DATA ==========
+            async function fetchAllData() {
+                try {
+                    // Fetch MonthlyDesigns sheet
+                    const dRes = await fetch(
+                        `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/MonthlyDesigns!A:E?key=${API_KEY}`
+                    );
+                    if (!dRes.ok) throw new Error('MonthlyDesigns fetch failed');
+                    const dJson = await dRes.json();
+                    const rows = dJson.values || [];
+                    if (rows.length < 2) throw new Error('Not enough data in MonthlyDesigns');
+
+                    // Process designs
+                    designData = {};
+                    const monthSet = new Set();
+                    for (let i = 1; i < rows.length; i++) {
+                        const [month, week, member, category, countStr] = rows[i];
+                        if (!month || !week || !member || !category || !MEMBERS.includes(member)) continue;
+                        const count = parseInt(countStr) || 0;
+                        const monthKey = month.trim();
+                        const weekKey = week.trim();
+                        monthSet.add(monthKey);
+                        if (!designData[monthKey]) designData[monthKey] = {};
+                        if (!designData[monthKey][weekKey]) designData[monthKey][weekKey] = {};
+                        if (!designData[monthKey][weekKey][member]) {
+                            designData[monthKey][weekKey][member] = { total: 0, categories: {} };
+                        }
+                        designData[monthKey][weekKey][member].categories[category] =
+                            (designData[monthKey][weekKey][member].categories[category] || 0) + count;
+                        designData[monthKey][weekKey][member].total += count;
+                    }
+
+                    // Sort months by date
+                    months = Array.from(monthSet).sort((a, b) => parseMonth(a) - parseMonth(b));
+
+                    // Fetch Savings
+                    const sRes = await fetch(
+                        `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Savings!A:C?key=${API_KEY}`
+                    );
+                    if (sRes.ok) {
+                        const sJson = await sRes.json();
+                        processSavingsData(sJson.values || []);
+                    } else {
+                        savingsData = MEMBERS.map(m => ({ member: m, totalSaved: 0, totalWithdrawn: 0, balance: 0 }));
+                    }
+
+                    // Set default selections to current month / latest week
+                    const now = new Date();
+                    const currentMonth = now.toLocaleString('en-US', { month:'long', year:'numeric' });
+                    const currentWeekNum = Math.ceil(now.getDate() / 7); // rough, but okay
+                    const currentWeekStr = `Week ${Math.min(currentWeekNum, 4)}`;
+
+                    if (months.includes(currentMonth)) {
+                        selectedMonth = currentMonth;
+                    } else if (months.length > 0) {
+                        selectedMonth = months[months.length - 1];
+                    } else {
+                        selectedMonth = '';
+                    }
+
+                    // Populate month dropdown
+                    populateMonthDropdown();
+                    // Populate week dropdown and set selectedWeek
+                    populateWeekDropdown();
+                    // If current week exists in selected month, pick it, else 'all'
+                    const weeks = Object.keys(designData[selectedMonth] || {});
+                    if (weeks.includes(currentWeekStr)) {
+                        selectedWeek = currentWeekStr;
+                    } else {
+                        selectedWeek = 'all';
+                    }
+                    updateWeekDropdownSelection();
+
+                    updateAllUI();
+                } catch (err) {
+                    console.error(err);
+                    showToast('Failed to load sheet data. Check console.', 'error');
+                }
+            }
+
+            function processSavingsData(sRows) {
+                savingsData = [];
+                for (let i = 1; i < sRows.length; i++) {
+                    const row = sRows[i];
+                    if (row[0] && MEMBERS.includes(row[0])) {
+                        savingsData.push({
+                            member: row[0],
+                            totalSaved: parseFloat(row[1]) || 0,
+                            totalWithdrawn: parseFloat(row[2]) || 0,
+                        });
+                    }
+                }
+                MEMBERS.forEach(m => {
+                    if (!savingsData.find(d => d.member === m))
+                        savingsData.push({ member: m, totalSaved: 0, totalWithdrawn: 0 });
+                });
+                savingsData.forEach(d => d.balance = d.totalSaved - d.totalWithdrawn);
+            }
+
+            function populateMonthDropdown() {
+                const select = $('#monthSelect');
+                select.innerHTML = months.map(m => `<option value="${m}">${m}</option>`).join('');
+                select.value = selectedMonth;
+                select.addEventListener('change', () => {
+                    selectedMonth = select.value;
+                    populateWeekDropdown();
+                    selectedWeek = 'all'; // reset to all on month change
+                    updateWeekDropdownSelection();
+                    updateDesignUI();
+                });
+            }
+
+            function populateWeekDropdown() {
+                const select = $('#weekSelect');
+                const weeks = selectedMonth ? Object.keys(designData[selectedMonth] || {}) : [];
+                // sort weeks by number
+                weeks.sort((a, b) => {
+                    const numA = parseInt(a.replace('Week ', ''));
+                    const numB = parseInt(b.replace('Week ', ''));
+                    return numA - numB;
+                });
+                let html = '<option value="all">All Weeks</option>';
+                weeks.forEach(w => { html += `<option value="${w}">${w}</option>`; });
+                select.innerHTML = html;
+                select.addEventListener('change', () => {
+                    selectedWeek = select.value;
+                    updateDesignUI();
+                });
+            }
+
+            function updateWeekDropdownSelection() {
+                const select = $('#weekSelect');
+                if (selectedWeek && [...select.options].some(o => o.value === selectedWeek)) {
+                    select.value = selectedWeek;
+                } else {
+                    select.value = 'all';
+                    selectedWeek = 'all';
+                }
+            }
+
+            function updateDesignUI() {
+                updateLeaderboard();
+                updateDesignsChart();
+                updateBadges();
+            }
+
+            function updateAllUI() {
+                updateDesignUI();
+                updateSavingsUI();
+                updateVotingUI();
+                updateBadges();
+            }
+
+            function refreshAllCharts() {
+                [designsChartInstance, voteChartInstance, savingsChartInstance].forEach(c => c?.update());
+            }
+
+            // ========== LEADERBOARD & CHART ==========
+            function getFilteredDesignData() {
+                const memberTotals = {};
+                const memberCategories = {};
+                MEMBERS.forEach(m => { memberTotals[m] = 0; memberCategories[m] = {}; });
+
+                if (!selectedMonth) return { memberTotals, memberCategories };
+
+                const monthData = designData[selectedMonth] || {};
+                const weeksToConsider = selectedWeek === 'all' ? Object.keys(monthData) : [selectedWeek];
+
+                weeksToConsider.forEach(week => {
+                    const weekData = monthData[week] || {};
+                    MEMBERS.forEach(m => {
+                        const d = weekData[m] || { total: 0, categories: {} };
+                        memberTotals[m] += d.total;
+                        Object.entries(d.categories).forEach(([cat, cnt]) => {
+                            memberCategories[m][cat] = (memberCategories[m][cat] || 0) + cnt;
+                        });
+                    });
+                });
+                return { memberTotals, memberCategories };
+            }
+
+            function updateLeaderboard() {
+                const { memberTotals, memberCategories } = getFilteredDesignData();
+                const sorted = Object.entries(memberTotals).sort((a, b) => b[1] - a[1]);
+                const tbody = $('#leaderboardBody');
+                tbody.innerHTML = sorted.map(([name, total], i) => {
+                    const rank = i + 1;
+                    const medal = ['🥇', '🥈', '🥉'][i] || '';
+                    const crown = rank === 1 ? ' <span class="crown">👑</span>' : '';
+                    const idx = MEMBERS.indexOf(name);
+                    const cats = memberCategories[name] || {};
+                    const breakdownStr = Object.entries(cats).map(([cat, cnt]) => `${cat}: ${cnt}`).join(', ') || '-';
+                    return `<tr>
+                        <td class="rank-cell rank-${rank}">${medal} ${rank}</td>
+                        <td class="member-name"><span class="member-avatar" style="background:${MEMBER_AVATAR_BG[idx]};"></span>${name}${crown}</td>
+                        <td class="design-count">${total} designs</td>
+                        <td class="category-breakdown">${breakdownStr}</td>
+                    </tr>`;
+                }).join('');
+                $('#badgeTotal').textContent = Object.values(memberTotals).reduce((a, b) => a + b, 0);
+            }
+
+            function updateDesignsChart() {
+                const ctx = $('#designsChart');
+                if (!ctx) return;
+                if (designsChartInstance) designsChartInstance.destroy();
+
+                const { memberTotals } = getFilteredDesignData();
+                designsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: MEMBERS,
+                        datasets: [{
+                            label: selectedMonth ? `Designs – ${selectedMonth}${selectedWeek !== 'all' ? ' ' + selectedWeek : ''}` : 'No data',
+                            data: MEMBERS.map(m => memberTotals[m] || 0),
+                            backgroundColor: MEMBER_COLORS.map(c => c + 'cc'),
+                            borderColor: MEMBER_COLORS,
+                            borderWidth: 2,
+                            borderRadius: 10,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false },
+                            title: { display: true, text: selectedMonth ? `Design Submissions` : 'No month selected', color: '#e2e8f0' }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#2d2d50' } },
+                            x: { ticks: { color: '#e2e8f0' }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            // ========== SAVINGS (unchanged) ==========
+            function updateSavingsUI() {
+                const container = $('#savingsCardsContainer');
+                const maxSaved = Math.max(...savingsData.map(d => d.totalSaved), 1);
+                container.innerHTML = savingsData.map((d, i) => {
+                    const pct = (d.totalSaved / maxSaved) * 100;
+                    return `<div class="savings-member-card">
+                        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+                            <span class="member-avatar" style="background:${MEMBER_AVATAR_BG[i]};width:40px;height:40px;">${d.member.charAt(0)}</span>
+                            <span class="sm-name">${d.member}</span>
+                        </div>
+                        <div class="sm-balance" style="color:${d.balance>=0?'var(--green)':'var(--red)'}">৳${d.balance.toFixed(0)}</div>
+                        <div class="sm-detail">
+                            <span>💚 Saved: ৳${d.totalSaved.toFixed(0)}</span>
+                            <span class="withdrawn-indicator">💸 Out: ৳${d.totalWithdrawn.toFixed(0)}</span>
+                        </div>
+                        <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${MEMBER_COLORS[i]},${MEMBER_COLORS[i]}88);"></div></div>
+                    </div>`;
+                }).join('');
+                const total = savingsData.reduce((s, d) => s + d.balance, 0);
+                $('#totalTeamBalance').textContent = `৳${total.toFixed(0)}`;
+                $('#totalTeamBalance').style.color = total >= 0 ? 'var(--green)' : 'var(--red)';
+                updateSavingsChart();
+            }
+
+            function updateSavingsChart() {
+                const ctx = $('#savingsChart');
+                if (!ctx) return;
+                if (savingsChartInstance) savingsChartInstance.destroy();
+                savingsChartInstance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: MEMBERS,
+                        datasets: [
+                            { label: 'Saved', data: savingsData.map(d => d.totalSaved), backgroundColor: '#34d39999', borderColor: '#34d399', borderWidth: 2, borderRadius: 8 },
+                            { label: 'Withdrawn', data: savingsData.map(d => d.totalWithdrawn), backgroundColor: '#f8717199', borderColor: '#f87171', borderWidth: 2, borderRadius: 8 }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { labels: { color: '#e2e8f0', usePointStyle: true } },
+                            title: { display: true, text: 'Savings vs Withdrawals', color: '#e2e8f0' }
+                        },
+                        scales: {
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8', callback: v => '৳' + v }, grid: { color: '#2d2d50' } },
+                            x: { ticks: { color: '#e2e8f0' }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+
+            function updateBadges() {
+                const weekVotes = votes[votingWeek] || {};
+                $('#badgeVotes').textContent = `${Object.keys(weekVotes).length}/${MEMBERS.length}`;
+            }
+
+            function showToast(msg, type) {
+                const toast = $('#toast');
+                toast.textContent = msg;
+                toast.className = 'toast ' + (type || 'info') + ' show';
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            function showVoteMsg(msg, type) {
+                const el = $('#voteMsg');
+                el.style.display = 'block';
+                el.textContent = msg;
+                el.className = 'vote-status ' + type;
+                setTimeout(() => el.style.display = 'none', 3500);
+            }
+
+            init();
+        })();
+    </script>
+</body>
+</html>
