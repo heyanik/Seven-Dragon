@@ -794,16 +794,16 @@
                             <span class="member-avatar" style="background:${MEMBER_AVATAR_BG[i]};width:40px;height:40px;">${d.member.charAt(0)}</span>
                             <span class="sm-name">${d.member}</span>
                         </div>
-                        <div class="sm-balance" style="color:${d.balance>=0?'var(--green)':'var(--red)'}">$${d.balance.toFixed(0)}</div>
+                        <div class="sm-balance" style="color:${d.balance>=0?'var(--green)':'var(--red)'}">৳${d.balance.toFixed(0)}</div>
                         <div class="sm-detail">
-                            <span>💚 Saved: $${d.totalSaved.toFixed(0)}</span>
-                            <span class="withdrawn-indicator">💸 Out: $${d.totalWithdrawn.toFixed(0)}</span>
+                            <span>💚 Saved: ৳${d.totalSaved.toFixed(0)}</span>
+                            <span class="withdrawn-indicator">💸 Out: ৳${d.totalWithdrawn.toFixed(0)}</span>
                         </div>
                         <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${MEMBER_COLORS[i]},${MEMBER_COLORS[i]}88);"></div></div>
                     </div>`;
                 }).join('');
                 const total = savingsData.reduce((s, d) => s + d.balance, 0);
-                $('#totalTeamBalance').textContent = `$${total.toFixed(0)}`;
+                $('#totalTeamBalance').textContent = `৳${total.toFixed(0)}`;
                 $('#totalTeamBalance').style.color = total >= 0 ? 'var(--green)' : 'var(--red)';
                 updateSavingsChart();
             }
@@ -828,7 +828,7 @@
                             title: { display: true, text: 'Savings vs Withdrawals', color: '#e2e8f0' }
                         },
                         scales: {
-                            y: { beginAtZero: true, ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: '#2d2d50' } },
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8', callback: v => '৳' + v }, grid: { color: '#2d2d50' } },
                             x: { ticks: { color: '#e2e8f0' }, grid: { display: false } }
                         }
                     }
