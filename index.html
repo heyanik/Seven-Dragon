@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Seven - Design & Savings Tracker</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <style>
         :root {
             --bg: #0f0f1a;
@@ -26,11 +25,7 @@
             --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background: var(--bg);
@@ -42,19 +37,10 @@
             background-attachment: fixed;
         }
         .header {
-            background: var(--surface);
-            border-bottom: 2px solid var(--border);
-            padding: 20px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            box-shadow: var(--shadow);
+            background: var(--surface); border-bottom: 2px solid var(--border);
+            padding: 20px 32px; display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px; position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(20px); box-shadow: var(--shadow);
         }
         .logo-area { display: flex; align-items: center; gap: 14px; }
         .logo-icon {
@@ -75,7 +61,7 @@
             -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
         .logo-text span { font-size: 0.8rem; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; }
-        .nav-tabs { display: flex; gap: 6px; background: var(--surface2); border-radius: 30px; padding: 5px; }
+        .nav-tabs { display: flex; gap: 6px; background: var(--surface2); border-radius: 30px; padding: 5px; flex-wrap: wrap; justify-content: center; }
         .nav-tab {
             padding: 10px 22px; border-radius: 26px; border: none; cursor: pointer;
             font-weight: 600; font-size: 0.95rem; transition: var(--transition);
@@ -99,11 +85,23 @@
         .section-subtitle { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 16px; font-weight: 400; }
         .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        @media (max-width: 1100px) { .grid-3col { grid-template-columns: repeat(2, 1fr); } }
         @media (max-width: 900px) {
-            .grid-2col, .grid-3col { grid-template-columns: 1fr; }
-            .header { padding: 14px 16px; justify-content: center; text-align: center; }
+            .grid-2col { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
+            .logo-area { width: 100%; justify-content: space-between; }
+            .nav-tabs { width: 100%; justify-content: center; }
+            .nav-tab { padding: 8px 16px; font-size: 0.85rem; }
+        }
+        @media (max-width: 600px) {
+            .grid-3col { grid-template-columns: 1fr; }
+            .card { padding: 16px; }
+            .header { padding: 12px 16px; }
+            .logo-icon { width: 40px; height: 40px; font-size: 22px; }
             .logo-text h1 { font-size: 1.3rem; }
-            .nav-tab { padding: 8px 14px; font-size: 0.85rem; }
+            .logo-text span { font-size: 0.7rem; }
+            .nav-tabs { gap: 4px; padding: 4px; }
+            .nav-tab { padding: 6px 12px; font-size: 0.8rem; }
         }
         .card {
             background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
@@ -122,10 +120,10 @@
             background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;
         }
         .selectors select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
-        .leaderboard-table { width: 100%; border-collapse: collapse; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; min-width: 400px; }
         .leaderboard-table th, .leaderboard-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
         .leaderboard-table th { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
-        .leaderboard-table tbody tr { transition: var(--transition); border-radius: 8px; }
+        .leaderboard-table tbody tr { transition: var(--transition); }
         .leaderboard-table tbody tr:hover { background: rgba(255,255,255,0.03); }
         .rank-cell { font-weight: 800; font-size: 1.2rem; width: 50px; }
         .rank-1 { color: var(--gold); } .rank-2 { color: #c0c0c0; } .rank-3 { color: #cd7f32; }
@@ -177,7 +175,7 @@
         .chart-wrap-sm canvas { max-height: 280px; }
         .savings-member-card {
             background: var(--surface2); border-radius: var(--radius-sm); padding: 18px 20px;
-            border: 1px solid var(--border); transition: var(--transition); position: relative; overflow: hidden;
+            border: 1px solid var(--border); transition: var(--transition);
         }
         .savings-member-card:hover { border-color: #4a4a75; transform: translateY(-3px); }
         .savings-member-card .sm-name { font-weight: 700; font-size: 1.05rem; margin-bottom: 6px; }
@@ -196,13 +194,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .toast.success { border-color: var(--green); }
-        .toast.error { border-color: var(--red); }
-        .highlight-flash { animation: flashGold 0.6s ease; }
-        @keyframes flashGold {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(240,192,64,0); }
-            50% { box-shadow: 0 0 30px 8px rgba(240,192,64,0.5); }
-        }
         .winner-banner {
             background: linear-gradient(135deg, #2a1f00, #3d2e00); border: 2px solid var(--gold);
             border-radius: var(--radius); padding: 18px 24px; text-align: center; margin-top: 16px;
@@ -217,7 +208,6 @@
     </style>
 </head>
 <body>
-
     <header class="header">
         <div class="logo-area">
             <div class="logo-icon">7</div>
@@ -244,13 +234,13 @@
                     </div>
                     <div style="overflow-x:auto;">
                         <table class="leaderboard-table">
-                            <thead><tr><th>Rank</th><th>Member</th><th>Designs</th><th>Breakdown</th></tr></thead>
+                            <thead><tr><th>Rank</th><th>Member</th><th>Points</th><th>Breakdown</th></tr></thead>
                             <tbody id="leaderboardBody"></tbody>
                         </table>
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">📊 Design Submissions Overview</div>
+                    <div class="card-header">📊 Design Points Overview</div>
                     <div class="chart-wrap"><canvas id="designsChart"></canvas></div>
                 </div>
             </div>
@@ -310,11 +300,17 @@
             const MEMBER_COLORS = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#38bdf8'];
             const MEMBER_AVATAR_BG = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#8e44ad', '#e67e22', '#1abc9c'];
 
-            // Design data organized by month -> week -> member -> { total, categories }
-            let designData = {};   // { monthStr: { weekStr: { member: { total, categories } } } }
-            let months = [];       // sorted list of unique month strings
+            // Point system
+            const CATEGORY_POINTS = {
+                'Allover': 1,
+                '3pcs': 13,
+                'Saari': 5
+            };
+
+            let designData = {};   // { month: { week: { member: { total, categories } } } }
+            let months = [];
             let selectedMonth = '';
-            let selectedWeek = 'all'; // 'all' or 'Week 1', ...
+            let selectedWeek = 'all';
 
             let savingsData = [];
             let votes = {};
@@ -323,7 +319,6 @@
             let designsChartInstance, voteChartInstance, savingsChartInstance;
             const $ = (sel) => document.querySelector(sel);
 
-            // ========== UTILS ==========
             function getFridayDate(date) {
                 const d = new Date(date);
                 const day = d.getDay();
@@ -334,10 +329,18 @@
             function isTodayFriday() { return new Date().getDay() === 5; }
 
             function parseMonth(str) {
-                // str like "May 2026"
                 const [monthName, year] = str.split(' ');
-                const monthIndex = new Date(`${monthName} 1, 2021`).getMonth(); // any year
+                const monthIndex = new Date(`${monthName} 1, 2021`).getMonth();
                 return new Date(parseInt(year), monthIndex, 1);
+            }
+
+            // Calculate points for a member based on their categories
+            function calculatePoints(categories) {
+                let points = 0;
+                for (const [cat, count] of Object.entries(categories)) {
+                    points += (CATEGORY_POINTS[cat] || 0) * count;
+                }
+                return points;
             }
 
             // ========== INIT ==========
@@ -361,19 +364,28 @@
                 });
             }
 
+            // Populate voter dropdown with only those who haven't voted yet this week
             function populateMemberSelects() {
-                const voter = $('#voterSelect');
-                const voteFor = $('#voteForSelect');
-                voter.innerHTML = '<option value="">-- Select Your Name --</option>';
-                voteFor.innerHTML = '<option value="">-- Select Who to Vote For --</option>';
+                const weekVotes = votes[votingWeek] || {};
+                const voters = Object.keys(weekVotes);
+                const voterSelect = $('#voterSelect');
+                voterSelect.innerHTML = '<option value="">-- Select Your Name --</option>';
+                MEMBERS.forEach((m, i) => {
+                    if (!voters.includes(m)) {
+                        const emoji = ['🦁','🐯','🐺','🦊','🐼','🐨','🦄'][i] || '⭐';
+                        voterSelect.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
+                    }
+                });
+                // Vote for dropdown always contains all members (except yourself handled by logic)
+                const voteForSelect = $('#voteForSelect');
+                voteForSelect.innerHTML = '<option value="">-- Select Who to Vote For --</option>';
                 MEMBERS.forEach((m, i) => {
                     const emoji = ['🦁','🐯','🐺','🦊','🐼','🐨','🦄'][i] || '⭐';
-                    voter.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
-                    voteFor.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
+                    voteForSelect.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
                 });
             }
 
-            // ========== VOTING (unchanged) ==========
+            // ========== VOTING ==========
             function loadVotesFromStorage() {
                 try { votes = JSON.parse(localStorage.getItem('seven_votes') || '{}'); } catch { votes = {}; }
             }
@@ -436,7 +448,7 @@
                 saveVotesToStorage();
                 showVoteMsg(`✅ Vote recorded! ${voter} ➜ ${voteFor}`, 'success');
                 updateVoteResults();
-                $('#voterSelect').value = '';
+                populateMemberSelects(); // Refresh voter dropdown to remove the voter
                 $('#voteForSelect').value = '';
                 $('#voteResultsCard').classList.add('highlight-flash');
                 setTimeout(() => $('#voteResultsCard').classList.remove('highlight-flash'), 600);
@@ -465,6 +477,7 @@
                     banner.innerHTML = '<div style="text-align:center;padding:14px;color:var(--text-dim);">No votes yet</div>';
                 }
                 $('#votesCountDisplay').textContent = `${Object.keys(weekVotes).length} / ${MEMBERS.length}`;
+                populateMemberSelects(); // Refresh dropdowns after result update (in case votes changed externally)
             }
 
             function renderVoteChart(counts) {
@@ -507,7 +520,6 @@
             // ========== SHEET DATA ==========
             async function fetchAllData() {
                 try {
-                    // Fetch MonthlyDesigns sheet
                     const dRes = await fetch(
                         `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/MonthlyDesigns!A:E?key=${API_KEY}`
                     );
@@ -516,7 +528,6 @@
                     const rows = dJson.values || [];
                     if (rows.length < 2) throw new Error('Not enough data in MonthlyDesigns');
 
-                    // Process designs
                     designData = {};
                     const monthSet = new Set();
                     for (let i = 1; i < rows.length; i++) {
@@ -536,10 +547,8 @@
                         designData[monthKey][weekKey][member].total += count;
                     }
 
-                    // Sort months by date
                     months = Array.from(monthSet).sort((a, b) => parseMonth(a) - parseMonth(b));
 
-                    // Fetch Savings
                     const sRes = await fetch(
                         `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/Savings!A:C?key=${API_KEY}`
                     );
@@ -550,10 +559,9 @@
                         savingsData = MEMBERS.map(m => ({ member: m, totalSaved: 0, totalWithdrawn: 0, balance: 0 }));
                     }
 
-                    // Set default selections to current month / latest week
                     const now = new Date();
                     const currentMonth = now.toLocaleString('en-US', { month:'long', year:'numeric' });
-                    const currentWeekNum = Math.ceil(now.getDate() / 7); // rough, but okay
+                    const currentWeekNum = Math.ceil(now.getDate() / 7);
                     const currentWeekStr = `Week ${Math.min(currentWeekNum, 4)}`;
 
                     if (months.includes(currentMonth)) {
@@ -564,11 +572,8 @@
                         selectedMonth = '';
                     }
 
-                    // Populate month dropdown
                     populateMonthDropdown();
-                    // Populate week dropdown and set selectedWeek
                     populateWeekDropdown();
-                    // If current week exists in selected month, pick it, else 'all'
                     const weeks = Object.keys(designData[selectedMonth] || {});
                     if (weeks.includes(currentWeekStr)) {
                         selectedWeek = currentWeekStr;
@@ -610,7 +615,7 @@
                 select.addEventListener('change', () => {
                     selectedMonth = select.value;
                     populateWeekDropdown();
-                    selectedWeek = 'all'; // reset to all on month change
+                    selectedWeek = 'all';
                     updateWeekDropdownSelection();
                     updateDesignUI();
                 });
@@ -619,7 +624,6 @@
             function populateWeekDropdown() {
                 const select = $('#weekSelect');
                 const weeks = selectedMonth ? Object.keys(designData[selectedMonth] || {}) : [];
-                // sort weeks by number
                 weeks.sort((a, b) => {
                     const numA = parseInt(a.replace('Week ', ''));
                     const numB = parseInt(b.replace('Week ', ''));
@@ -661,13 +665,12 @@
                 [designsChartInstance, voteChartInstance, savingsChartInstance].forEach(c => c?.update());
             }
 
-            // ========== LEADERBOARD & CHART ==========
             function getFilteredDesignData() {
-                const memberTotals = {};
+                const memberPoints = {};
                 const memberCategories = {};
-                MEMBERS.forEach(m => { memberTotals[m] = 0; memberCategories[m] = {}; });
+                MEMBERS.forEach(m => { memberPoints[m] = 0; memberCategories[m] = {}; });
 
-                if (!selectedMonth) return { memberTotals, memberCategories };
+                if (!selectedMonth) return { memberPoints, memberCategories };
 
                 const monthData = designData[selectedMonth] || {};
                 const weeksToConsider = selectedWeek === 'all' ? Object.keys(monthData) : [selectedWeek];
@@ -676,20 +679,22 @@
                     const weekData = monthData[week] || {};
                     MEMBERS.forEach(m => {
                         const d = weekData[m] || { total: 0, categories: {} };
-                        memberTotals[m] += d.total;
+                        // Aggregate categories for breakdown
                         Object.entries(d.categories).forEach(([cat, cnt]) => {
                             memberCategories[m][cat] = (memberCategories[m][cat] || 0) + cnt;
                         });
+                        // Calculate points from categories
+                        memberPoints[m] += calculatePoints(d.categories);
                     });
                 });
-                return { memberTotals, memberCategories };
+                return { memberPoints, memberCategories };
             }
 
             function updateLeaderboard() {
-                const { memberTotals, memberCategories } = getFilteredDesignData();
-                const sorted = Object.entries(memberTotals).sort((a, b) => b[1] - a[1]);
+                const { memberPoints, memberCategories } = getFilteredDesignData();
+                const sorted = Object.entries(memberPoints).sort((a, b) => b[1] - a[1]);
                 const tbody = $('#leaderboardBody');
-                tbody.innerHTML = sorted.map(([name, total], i) => {
+                tbody.innerHTML = sorted.map(([name, points], i) => {
                     const rank = i + 1;
                     const medal = ['🥇', '🥈', '🥉'][i] || '';
                     const crown = rank === 1 ? ' <span class="crown">👑</span>' : '';
@@ -699,11 +704,12 @@
                     return `<tr>
                         <td class="rank-cell rank-${rank}">${medal} ${rank}</td>
                         <td class="member-name"><span class="member-avatar" style="background:${MEMBER_AVATAR_BG[idx]};"></span>${name}${crown}</td>
-                        <td class="design-count">${total} designs</td>
+                        <td class="design-count">${points} pts</td>
                         <td class="category-breakdown">${breakdownStr}</td>
                     </tr>`;
                 }).join('');
-                $('#badgeTotal').textContent = Object.values(memberTotals).reduce((a, b) => a + b, 0);
+                const totalPoints = Object.values(memberPoints).reduce((a,b) => a+b, 0);
+                $('#badgeTotal').textContent = totalPoints + 'pts';
             }
 
             function updateDesignsChart() {
@@ -711,14 +717,14 @@
                 if (!ctx) return;
                 if (designsChartInstance) designsChartInstance.destroy();
 
-                const { memberTotals } = getFilteredDesignData();
+                const { memberPoints } = getFilteredDesignData();
                 designsChartInstance = new Chart(ctx, {
                     type: 'bar',
                     data: {
                         labels: MEMBERS,
                         datasets: [{
-                            label: selectedMonth ? `Designs – ${selectedMonth}${selectedWeek !== 'all' ? ' ' + selectedWeek : ''}` : 'No data',
-                            data: MEMBERS.map(m => memberTotals[m] || 0),
+                            label: 'Points',
+                            data: MEMBERS.map(m => memberPoints[m] || 0),
                             backgroundColor: MEMBER_COLORS.map(c => c + 'cc'),
                             borderColor: MEMBER_COLORS,
                             borderWidth: 2,
@@ -730,7 +736,7 @@
                         maintainAspectRatio: true,
                         plugins: {
                             legend: { display: false },
-                            title: { display: true, text: selectedMonth ? `Design Submissions` : 'No month selected', color: '#e2e8f0' }
+                            title: { display: true, text: selectedMonth ? `Design Points` : 'No month selected', color: '#e2e8f0' }
                         },
                         scales: {
                             y: { beginAtZero: true, ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#2d2d50' } },
@@ -740,7 +746,6 @@
                 });
             }
 
-            // ========== SAVINGS (unchanged) ==========
             function updateSavingsUI() {
                 const container = $('#savingsCardsContainer');
                 const maxSaved = Math.max(...savingsData.map(d => d.totalSaved), 1);
