@@ -83,43 +83,29 @@
         .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
         .section-title .icon { font-size: 1.6rem; }
         .section-subtitle { color: var(--text-dim); font-size: 0.9rem; margin-bottom: 16px; font-weight: 400; }
+
         .grid-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .grid-3col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-        @media (max-width: 1100px) { .grid-3col { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 900px) {
-            .grid-2col { grid-template-columns: 1fr; }
-            .header { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
-            .logo-area { width: 100%; justify-content: space-between; }
-            .nav-tabs { width: 100%; justify-content: center; }
-            .nav-tab { padding: 8px 16px; font-size: 0.85rem; }
-        }
-        @media (max-width: 600px) {
-            .grid-3col { grid-template-columns: 1fr; }
-            .card { padding: 16px; }
-            .header { padding: 12px 16px; }
-            .logo-icon { width: 40px; height: 40px; font-size: 22px; }
-            .logo-text h1 { font-size: 1.3rem; }
-            .logo-text span { font-size: 0.7rem; }
-            .nav-tabs { gap: 4px; padding: 4px; }
-            .nav-tab { padding: 6px 12px; font-size: 0.8rem; }
-        }
+
         .card {
             background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
             padding: 24px; box-shadow: var(--shadow); transition: var(--transition);
         }
         .card:hover { border-color: #3d3d65; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
         .card-header { font-weight: 700; font-size: 1.05rem; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+
         .selectors { display: flex; gap: 16px; margin-bottom: 16px; flex-wrap: wrap; align-items: center; }
-        .selectors label { font-weight: 600; color: var(--text-dim); font-size: 0.9rem; margin-right: 4px; }
+        .selectors label { font-weight: 600; color: var(--text-dim); font-size: 0.9rem; margin-right: 4px; white-space: nowrap; }
         .selectors select {
             padding: 8px 14px; border-radius: 20px; border: 2px solid var(--border);
             background: var(--surface2); color: #fff; font-weight: 600; font-size: 0.85rem;
-            cursor: pointer; transition: var(--transition);
+            cursor: pointer; transition: var(--transition); min-width: 120px;
             appearance: none; -webkit-appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23a78bfa' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right 10px center; padding-right: 30px;
         }
         .selectors select:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px rgba(139,92,246,0.2); }
+
         .leaderboard-table { width: 100%; border-collapse: collapse; min-width: 400px; }
         .leaderboard-table th, .leaderboard-table td { padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
         .leaderboard-table th { color: var(--text-dim); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
@@ -139,6 +125,7 @@
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-8px); }
         }
+
         .vote-form { display: flex; flex-direction: column; gap: 14px; }
         .vote-form label { font-weight: 600; font-size: 0.9rem; color: var(--text-dim); }
         .vote-form select, .vote-form input {
@@ -169,10 +156,12 @@
         .vote-status.success { background: rgba(52,211,153,0.15); color: var(--green); border: 1px solid rgba(52,211,153,0.3); }
         .vote-status.info { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
         .vote-status.warning { background: rgba(240,192,64,0.15); color: var(--gold); border: 1px solid rgba(240,192,64,0.3); }
+
         .chart-wrap { position: relative; width: 100%; max-height: 380px; }
         .chart-wrap canvas { width: 100% !important; max-height: 380px; }
         .chart-wrap-sm { max-height: 280px; }
         .chart-wrap-sm canvas { max-height: 280px; }
+
         .savings-member-card {
             background: var(--surface2); border-radius: var(--radius-sm); padding: 18px 20px;
             border: 1px solid var(--border); transition: var(--transition);
@@ -184,6 +173,7 @@
         .progress-bar-wrap { margin-top: 10px; background: #1a1a30; border-radius: 20px; height: 8px; overflow: hidden; }
         .progress-bar-fill { height: 100%; border-radius: 20px; transition: width 0.8s ease; background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
         .withdrawn-indicator { color: var(--red); font-weight: 600; }
+
         .toast {
             position: fixed; bottom: 30px; right: 30px; background: var(--surface); border: 1px solid var(--border);
             border-radius: 12px; padding: 14px 22px; color: #fff; font-weight: 600;
@@ -205,6 +195,54 @@
         }
         .winner-banner .winner-name { font-size: 1.5rem; font-weight: 900; color: var(--gold); }
         .winner-banner .winner-title { font-size: 0.85rem; color: #cba030; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 1100px) {
+            .grid-3col { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 900px) {
+            .grid-2col { grid-template-columns: 1fr; }
+            .header { flex-direction: column; align-items: flex-start; padding: 16px 20px; }
+            .logo-area { width: 100%; justify-content: space-between; }
+            .nav-tabs { width: 100%; justify-content: center; }
+            .nav-tab { padding: 8px 16px; font-size: 0.85rem; }
+            .selectors { flex-wrap: wrap; }
+            .chart-wrap { max-height: 300px; }
+            .chart-wrap canvas { max-height: 300px; }
+            .chart-wrap-sm { max-height: 240px; }
+            .chart-wrap-sm canvas { max-height: 240px; }
+        }
+        @media (max-width: 600px) {
+            .grid-3col { grid-template-columns: 1fr; }
+            .card { padding: 16px; }
+            .card-header { font-size: 0.95rem; }
+            .selectors {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .selectors label { margin-bottom: -4px; }
+            .selectors select { width: 100%; }
+            .leaderboard-table { min-width: 300px; }
+            .leaderboard-table th, .leaderboard-table td { padding: 8px 10px; }
+            .rank-cell { font-size: 1rem; width: 36px; }
+            .design-count { font-size: 0.95rem; }
+            .category-breakdown { font-size: 0.7rem; }
+            .btn { padding: 10px 20px; font-size: 0.85rem; }
+            .vote-form select, .vote-form input { padding: 10px 14px; font-size: 0.9rem; }
+            .winner-banner .winner-name { font-size: 1.2rem; }
+            .toast { left: 20px; right: 20px; bottom: 20px; }
+            .header { padding: 12px 16px; }
+            .logo-icon { width: 40px; height: 40px; font-size: 22px; }
+            .logo-text h1 { font-size: 1.3rem; }
+            .logo-text span { font-size: 0.7rem; }
+            .nav-tabs { gap: 4px; padding: 4px; }
+            .nav-tab { padding: 6px 12px; font-size: 0.8rem; }
+        }
+        @media (max-width: 400px) {
+            .leaderboard-table { min-width: 280px; }
+            .selectors select { font-size: 0.8rem; }
+        }
     </style>
 </head>
 <body>
@@ -300,17 +338,16 @@
             const MEMBER_COLORS = ['#f87171', '#60a5fa', '#34d399', '#fbbf24', '#a78bfa', '#fb923c', '#38bdf8'];
             const MEMBER_AVATAR_BG = ['#e74c3c', '#3498db', '#2ecc71', '#f39c12', '#8e44ad', '#e67e22', '#1abc9c'];
 
-            // Point system
             const CATEGORY_POINTS = {
                 'Allover': 1,
-                '3pcs': 13,
+                '3pcs': 3,
                 'Saari': 5
             };
 
-            let designData = {};   // { month: { week: { member: { total, categories } } } }
+            let designData = {};          // { month: { week: { member: { total, categories } } } }
             let months = [];
             let selectedMonth = '';
-            let selectedWeek = 'all';
+            let selectedWeek = 'all';     // 'all' or specific week like 'Week 1'
 
             let savingsData = [];
             let votes = {};
@@ -334,7 +371,6 @@
                 return new Date(parseInt(year), monthIndex, 1);
             }
 
-            // Calculate points for a member based on their categories
             function calculatePoints(categories) {
                 let points = 0;
                 for (const [cat, count] of Object.entries(categories)) {
@@ -364,7 +400,6 @@
                 });
             }
 
-            // Populate voter dropdown with only those who haven't voted yet this week
             function populateMemberSelects() {
                 const weekVotes = votes[votingWeek] || {};
                 const voters = Object.keys(weekVotes);
@@ -376,7 +411,6 @@
                         voterSelect.innerHTML += `<option value="${m}">${emoji} ${m}</option>`;
                     }
                 });
-                // Vote for dropdown always contains all members (except yourself handled by logic)
                 const voteForSelect = $('#voteForSelect');
                 voteForSelect.innerHTML = '<option value="">-- Select Who to Vote For --</option>';
                 MEMBERS.forEach((m, i) => {
@@ -448,7 +482,7 @@
                 saveVotesToStorage();
                 showVoteMsg(`✅ Vote recorded! ${voter} ➜ ${voteFor}`, 'success');
                 updateVoteResults();
-                populateMemberSelects(); // Refresh voter dropdown to remove the voter
+                populateMemberSelects();
                 $('#voteForSelect').value = '';
                 $('#voteResultsCard').classList.add('highlight-flash');
                 setTimeout(() => $('#voteResultsCard').classList.remove('highlight-flash'), 600);
@@ -477,7 +511,7 @@
                     banner.innerHTML = '<div style="text-align:center;padding:14px;color:var(--text-dim);">No votes yet</div>';
                 }
                 $('#votesCountDisplay').textContent = `${Object.keys(weekVotes).length} / ${MEMBERS.length}`;
-                populateMemberSelects(); // Refresh dropdowns after result update (in case votes changed externally)
+                populateMemberSelects();
             }
 
             function renderVoteChart(counts) {
@@ -615,7 +649,7 @@
                 select.addEventListener('change', () => {
                     selectedMonth = select.value;
                     populateWeekDropdown();
-                    selectedWeek = 'all';
+                    selectedWeek = 'all';   // reset to all weeks when month changes
                     updateWeekDropdownSelection();
                     updateDesignUI();
                 });
@@ -665,6 +699,7 @@
                 [designsChartInstance, voteChartInstance, savingsChartInstance].forEach(c => c?.update());
             }
 
+            // ========== CORE: POINT CALCULATION (only selected week or all weeks) ==========
             function getFilteredDesignData() {
                 const memberPoints = {};
                 const memberCategories = {};
@@ -673,20 +708,23 @@
                 if (!selectedMonth) return { memberPoints, memberCategories };
 
                 const monthData = designData[selectedMonth] || {};
-                const weeksToConsider = selectedWeek === 'all' ? Object.keys(monthData) : [selectedWeek];
+                const weeksToConsider = selectedWeek === 'all'
+                    ? Object.keys(monthData)
+                    : [selectedWeek];
 
                 weeksToConsider.forEach(week => {
                     const weekData = monthData[week] || {};
                     MEMBERS.forEach(m => {
                         const d = weekData[m] || { total: 0, categories: {} };
-                        // Aggregate categories for breakdown
+                        // accumulate categories for breakdown (even if points are zero for unknown categories)
                         Object.entries(d.categories).forEach(([cat, cnt]) => {
                             memberCategories[m][cat] = (memberCategories[m][cat] || 0) + cnt;
                         });
-                        // Calculate points from categories
+                        // add points from this week
                         memberPoints[m] += calculatePoints(d.categories);
                     });
                 });
+
                 return { memberPoints, memberCategories };
             }
 
@@ -709,7 +747,7 @@
                     </tr>`;
                 }).join('');
                 const totalPoints = Object.values(memberPoints).reduce((a,b) => a+b, 0);
-                $('#badgeTotal').textContent = totalPoints + 'pts';
+                $('#badgeTotal').textContent = totalPoints + ' pts';
             }
 
             function updateDesignsChart() {
@@ -756,16 +794,16 @@
                             <span class="member-avatar" style="background:${MEMBER_AVATAR_BG[i]};width:40px;height:40px;">${d.member.charAt(0)}</span>
                             <span class="sm-name">${d.member}</span>
                         </div>
-                        <div class="sm-balance" style="color:${d.balance>=0?'var(--green)':'var(--red)'}">৳${d.balance.toFixed(0)}</div>
+                        <div class="sm-balance" style="color:${d.balance>=0?'var(--green)':'var(--red)'}">$${d.balance.toFixed(0)}</div>
                         <div class="sm-detail">
-                            <span>💚 Saved: ৳${d.totalSaved.toFixed(0)}</span>
-                            <span class="withdrawn-indicator">💸 Out: ৳${d.totalWithdrawn.toFixed(0)}</span>
+                            <span>💚 Saved: $${d.totalSaved.toFixed(0)}</span>
+                            <span class="withdrawn-indicator">💸 Out: $${d.totalWithdrawn.toFixed(0)}</span>
                         </div>
                         <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${pct}%;background:linear-gradient(90deg,${MEMBER_COLORS[i]},${MEMBER_COLORS[i]}88);"></div></div>
                     </div>`;
                 }).join('');
                 const total = savingsData.reduce((s, d) => s + d.balance, 0);
-                $('#totalTeamBalance').textContent = `৳${total.toFixed(0)}`;
+                $('#totalTeamBalance').textContent = `$${total.toFixed(0)}`;
                 $('#totalTeamBalance').style.color = total >= 0 ? 'var(--green)' : 'var(--red)';
                 updateSavingsChart();
             }
@@ -790,7 +828,7 @@
                             title: { display: true, text: 'Savings vs Withdrawals', color: '#e2e8f0' }
                         },
                         scales: {
-                            y: { beginAtZero: true, ticks: { color: '#94a3b8', callback: v => '৳' + v }, grid: { color: '#2d2d50' } },
+                            y: { beginAtZero: true, ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: '#2d2d50' } },
                             x: { ticks: { color: '#e2e8f0' }, grid: { display: false } }
                         }
                     }
